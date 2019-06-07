@@ -1,4 +1,4 @@
-from components.State import State
+from components.state import State
 #print(State)
 s = State()
 s1 = s.make('s1')
