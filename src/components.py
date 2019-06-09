@@ -96,9 +96,13 @@ class Automaton():
 
     # JAVA API: 
 
-    def make(self, name, alphabet):
+    def make(self, name, comment, alphabet, initialState):
 
-        aut = AUTOMATON(name)
+        if not isinstance(alphabet, ALPHABET):
+            raise TypeError("Argument alphabet must be of type components.Alphabet.")
+
+        # have to pass all non-java initialized arguments
+        aut = AUTOMATON(name, comment, alphabet, initialState)
 
         return aut
 

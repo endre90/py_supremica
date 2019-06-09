@@ -39,20 +39,23 @@ class Generator():
         return alph_1
 
     def make_automaton(self, name, alphabet, states, arcs):
+        
+        # problem is in the components 
+
         aut = Automaton()
         aut_1 = aut.make(name, self.make_alphabet(alphabet))
-        print(aut_1.getEvents()) #not workin
-
+        
+   
         for state in states:
             aut_1.addState(self.make_state(state))
         
-        print(aut_1.getStates())
-        
         for arc in arcs:
-            aut_1.addArc(self.make_arc(self.make_state(arc[0]), 
+            a = self.make_arc(self.make_state(arc[0]), 
                                        self.make_state(arc[1]),
-                                       self.make_event(arc[2])))
-            print(arc)
+                                       self.make_event(arc[2]))
+            print(a)
+            aut_1.addArc(a)
+            print(aut_1.getTransitions())
 
         return aut_1
     
@@ -86,5 +89,5 @@ class Generator():
                 raise TypeError("Sink state must be in states")
             if not arc[2] in alphabet:
                 raise TypeError("Event that labels the arc must be in alphabet")
-            
+
         return self.make_automaton(name, alphabet, states, arcs)

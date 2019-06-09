@@ -5,19 +5,19 @@ from components import Alphabet
 from components import Automaton
 from generator import Generator
 
-
+'''
 states = ['s1', 's2', 's3', 's4', 's5']
 events = ['e1', 'e2', '!e3', '!e4', 'e5']
 trans = [('s1', 's2', 'e1'), ('s2', 's3', '!e3')]
 
 g = Generator()
 aut1 = g.generate_automaton('aut1', events, states, trans)
-
-print(aut1.nbrOfTransitions())
-print(aut1.getTransitions())
-print(aut1)
-
 '''
+
+
+# print(aut1.nbrOfTransitions())
+# print(aut1.getTransitions())
+# print(aut1
 
 # for s in states:
 
@@ -47,19 +47,19 @@ print("===========")
 print(s1)
 print(e1)
 print(s1.isInitial())
-s1.setInitial(True)
+#s1.setInitial(True)
 print("===========")
 print(e1.getKind())
 # 
 # 
 print(s1.isInitial())
 # 
-s1.setInitial(False)
+s1.setInitial(True)
 print(s1.isInitial())
 
 a = Arc()
-a1 = a.make('t1', s1, s2, e1)
-a2 = a.make('t2', s2, s3, e2)
+a1 = a.make(s1, s2, e1)
+a2 = a.make(s2, s3, e2)
 print(a1)
 print(a2)
 
@@ -70,11 +70,13 @@ alph1.addEvent(e2)
 
 
 aut = Automaton()
-aut1 = aut.make('aut1', alph1)
+aut1 = aut.make('aut1', 'comments', alph1, s1)
 aut1.addState(s1)
 aut1.addState(s2)
 aut1.addState(s3)
-
+#aut1.addEvent(e1)
+#aut1.alphabet(alph1)
+print(aut1.getAlphabet())
 #alph1 = [e1, e2, e3]
 
 aut1.addArc(a1)
@@ -83,5 +85,8 @@ aut1.addArc(a2)
 print(alph1)
 print(aut1.nbrOfTransitions())
 print(aut1.getTransitions())
-print(aut1)
-'''
+print(aut1.getAlphabet())
+#print(aut1.isInAlphabet(e1))
+#print(aut1)
+
+#name, comment, alphabet, initialState
