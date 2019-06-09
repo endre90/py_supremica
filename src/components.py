@@ -19,6 +19,10 @@ LABELEDEVENT = jpype.JPackage("org").supremica.automata.LabeledEvent
 ALPHABET = jpype.JPackage("org").supremica.automata.Alphabet
 ARC = jpype.JPackage("org").supremica.automata.Arc
 AUTOMATON = jpype.JPackage("org").supremica.automata.Automaton
+AUTOMATA = jpype.JPackage("org").supremica.automata.Automata
+SYNCHRONIZATIONOPTIONS = jpype.JPackage("org").supremica.automata.SynchronizationOptions
+AUTOMATASYNCHRONIZER = jpype.JPackage("org").supremica.automata.AutomataSynchronizer
+
 
 
 class State:
@@ -77,5 +81,32 @@ class Automaton():
     def make(self, name):
 
         aut = AUTOMATON(name)
+
+        return aut
+
+
+class Automata():
+
+    def make(self):
+
+        aut = AUTOMATA()
+
+        return aut
+
+
+class SynchronizationOptions():
+
+    def make(self):
+
+        opt = SYNCHRONIZATIONOPTIONS
+
+        return opt
+
+
+class AutomataSynchronizer():
+
+    def make(self, automata):
+
+        aut = AUTOMATASYNCHRONIZER
 
         return aut

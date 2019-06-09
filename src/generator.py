@@ -4,6 +4,7 @@ from components import Arc
 from components import Alphabet
 from components import Automaton
 
+
 class Generator():
 
     # The new lambdas:
@@ -69,11 +70,6 @@ class Generator():
         
         for e in alphabet:
             exec('{} = self.make_event({}, u_alphabet)'.format(e, ('"{}"'.format(e))))
-            #if '!' in e:
-            #    e_repl = e.replace('!', '')
-            #    exec('{} = self.make_event({})'.format(e_repl, ('"{}"'.format(e))))
-            #else:
-                
 
         for a in arcs:
             exec('{} = self.make_arc({}, {}, {})'.format(a[0], a[1], a[2], a[3]))
@@ -95,6 +91,7 @@ class Generator():
 
         return aut_1
     
+
     def generate_automaton(self, name, states, alphabet, u_alphabet, arcs, init, marked, forbidden):
 
         if not isinstance(name, str):
@@ -150,4 +147,4 @@ class Generator():
             if not forb in states:
                 raise TypeError("Forbidden state " + forb + " must be in states.")
 
-        return self.make_automaton(name, states, alphabet, u_alphabet, arcs, init, marked, forbidden)
+        return self.make_automaton(name, states, alphabet, u_alphabet, arcs, init, marked, forbidden)        

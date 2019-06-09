@@ -1,4 +1,5 @@
 from generator import Generator
+from automata_synchronizer import Synchronizer
 
 states = ['s1', 's2', 's3', 's4', 's5', 's6']
 alphabet = ['e1', 'e2', 'e3', 'e4', 'e5']
@@ -10,6 +11,7 @@ forbidden = ['s2', 's6']
 
 g = Generator()
 aut1 = g.generate_automaton('aut1', states, alphabet, u_alphabet, arcs, init, marked, forbidden)
+aut2 = g.generate_automaton('aut2', states, alphabet, u_alphabet, arcs, init, marked, forbidden)
 
 # Some tryouts
 print(aut1.getStates())
@@ -28,3 +30,7 @@ for s in aut1.getStates():
     if s.isForbidden():
         print("forbidden")
         print(s)
+
+s = Synchronizer()
+auts = s.synchronize_automata([aut1, aut2])
+print(auts.getStates()) # hmmm...?
