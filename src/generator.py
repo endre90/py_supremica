@@ -6,13 +6,24 @@ from components import Automaton
 
 class Generator():
 
-    def make_event(self, x):
+    # The new lambdas:
+    def make_event(self, x, u_alphabet):
         e = LabeledEvent()
-        return e.make(x)
+        if x in u_alphabet:
+            return self.set_uncontrollable(e.make(x))
+        else:
+            return self.set_controllable(e.make(x))
 
-    def make_state(self, x):
+    def make_state(self, x, init, marked, forbidden):
         s = State()
-        return s.make(x)
+        if x == init:
+            return self.set_initial(s.make(x))
+        elif x in marked:
+            return self.set_marked(s.make(x))
+        elif x in forbidden:
+            return self.set_forbidden(s.make(x))
+        else:
+            return s.make(x)
     
     def set_controllable(self, x):
         x.setControllable(True)
@@ -22,11 +33,24 @@ class Generator():
         x.setControllable(False)
         return x
 
+    def set_initial(self, x):
+        x.setInitial(True)
+        return x
+    
+    def set_marked(self, x):
+        x.setAccepting(True)
+        return x
+    
+    def set_forbidden(self, x):
+        x.setForbidden(True)
+        return x
+
     def make_arc(self, source, sink, event):
         a = Arc()
         return a.make(source, sink, event)
 
-    def make_alphabet(self, alphabet):
+    # Not used currently(alph is alph of aut):
+    def make_alphabet(self, alphabet, u_alphabet):
         alph = Alphabet()
         alph_1 = alph.make()
 
@@ -38,42 +62,55 @@ class Generator():
         
         return alph_1
 
-    def make_automaton(self, name, alphabet, states, arcs):
+    def make_automaton(self, name, states, alphabet, u_alphabet, arcs, init, marked, forbidden):
+    
+        for s in states:
+            exec('{} = self.make_state({}, init, marked, forbidden)'.format(s, ('"{}"'.format(s))))
         
-        # problem is in the components 
+        for e in alphabet:
+            exec('{} = self.make_event({}, u_alphabet)'.format(e, ('"{}"'.format(e))))
+            #if '!' in e:
+            #    e_repl = e.replace('!', '')
+            #    exec('{} = self.make_event({})'.format(e_repl, ('"{}"'.format(e))))
+            #else:
+                
 
+        for a in arcs:
+            exec('{} = self.make_arc({}, {}, {})'.format(a[0], a[1], a[2], a[3]))
+        
+        # Not used currently(alph is alph of aut):
+        # alph = self.make_alphabet(alphabet)
+    
         aut = Automaton()
-        aut_1 = aut.make(name, self.make_alphabet(alphabet))
-        
-   
-        for state in states:
-            aut_1.addState(self.make_state(state))
-        
-        for arc in arcs:
-            a = self.make_arc(self.make_state(arc[0]), 
-                                       self.make_state(arc[1]),
-                                       self.make_event(arc[2]))
-            print(a)
-            aut_1.addArc(a)
-            print(aut_1.getTransitions())
+        aut_1 = aut.make(name)
+
+        for s in states:
+            aut_1.addState(eval(s))
+
+        for a in arcs:
+            aut_1.addArc(eval(a[0]))
+
+        for e in alphabet:
+            aut_1.getAlphabet().addEvent(eval(e))
 
         return aut_1
     
-    def generate_automaton(self, name, alphabet, states, arcs):
+    def generate_automaton(self, name, states, alphabet, u_alphabet, arcs, init, marked, forbidden):
+
         if not isinstance(name, str):
             raise TypeError("Argument name must be of type String.")
+
+        if not isinstance(states, list):
+            raise TypeError("Argument states must be of type List.")
+        for state in states:
+            if not isinstance(state, str):
+                raise TypeError("Argument element of states must be of type String.")
 
         if not isinstance(alphabet, list):
             raise TypeError("Argument alphabet must be of type List.")
         for event in alphabet:
             if not isinstance(event, str):
                 raise TypeError("Argument element of alphabet must be of type String.")
-        
-        if not isinstance(states, list):
-            raise TypeError("Argument states must be of type List.")
-        for state in states:
-            if not isinstance(state, str):
-                raise TypeError("Argument element of states must be of type String.")
         
         if not isinstance(arcs, list):
             raise TypeError("Argument arcs must be of type List.")
@@ -83,11 +120,34 @@ class Generator():
             for elem in arc:
                 if not isinstance(elem, str):
                     raise TypeError("Element of argument element of arcs must be of type String.")
-            if not arc[0] in states:
-                raise TypeError("Source state must be in states")
+            if not isinstance(arc[0], str):
+                raise TypeError("Argument element 'arc name' a.k.a. arc[0] must be of type String.")
             if not arc[1] in states:
-                raise TypeError("Sink state must be in states")
-            if not arc[2] in alphabet:
-                raise TypeError("Event that labels the arc must be in alphabet")
+                raise TypeError("Source state must be in states.")
+            if not arc[2] in states:
+                raise TypeError("Sink state must be in states.")
+            if not arc[3] in alphabet:
+                raise TypeError("Event that labels the arc must be in alphabet.")
 
-        return self.make_automaton(name, alphabet, states, arcs)
+        if not isinstance(init, str):
+            raise TypeError("Argument init must be of type String.")
+        if not init in states:
+            raise TypeError("Initial state must be in states.")
+
+        if not isinstance(marked, list):
+            raise TypeError("Argument marked must be of type List.")
+        for mark in marked:
+            if not isinstance(mark, str):
+                raise TypeError("Argument element of marked must be of type String.")
+            if not mark in states:
+                raise TypeError("Marked state " + mark + " must be in states.")
+        
+        if not isinstance(forbidden, list):
+            raise TypeError("Argument forbidden must be of type List.")
+        for forb in forbidden:
+            if not isinstance(forb, str):
+                raise TypeError("Argument element of forbidden must be of type String.")
+            if not forb in states:
+                raise TypeError("Forbidden state " + forb + " must be in states.")
+
+        return self.make_automaton(name, states, alphabet, u_alphabet, arcs, init, marked, forbidden)
