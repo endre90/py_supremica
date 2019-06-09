@@ -1,8 +1,8 @@
-from components import State
-from components import LabeledEvent
-from components import Arc
-from components import Alphabet
-from components import Automaton
+from supremica_components import State
+from supremica_components import LabeledEvent
+from supremica_components import Arc
+from supremica_components import Alphabet
+from supremica_components import Automaton
 
 
 class Generator():
@@ -48,6 +48,9 @@ class Generator():
 
     def make_arc(self, source, sink, event):
         a = Arc()
+        print(source)
+        print(sink)
+        print(event)
         return a.make(source, sink, event)
 
     # Not used currently(alph is alph of aut):
@@ -65,14 +68,14 @@ class Generator():
 
     def make_automaton(self, name, states, alphabet, u_alphabet, arcs, init, marked, forbidden):
     
-        for s in states:
-            exec('{} = self.make_state({}, init, marked, forbidden)'.format(s, ('"{}"'.format(s))))
+        for state in states:
+            exec('{} = self.make_state({}, init, marked, forbidden)'.format(state, ('"{}"'.format(state))))
         
-        for e in alphabet:
-            exec('{} = self.make_event({}, u_alphabet)'.format(e, ('"{}"'.format(e))))
+        for event in alphabet:
+            exec('{} = self.make_event({}, u_alphabet)'.format(event, ('"{}"'.format(event))))
 
-        for a in arcs:
-            exec('{} = self.make_arc({}, {}, {})'.format(a[0], a[1], a[2], a[3]))
+        for arc in arcs:
+            exec('{} = self.make_arc({}, {}, {})'.format(arc[0], arc[1], arc[2], arc[3]))
         
         # Not used currently(alph is alph of aut):
         # alph = self.make_alphabet(alphabet)
@@ -80,14 +83,14 @@ class Generator():
         aut = Automaton()
         aut_1 = aut.make(name)
 
-        for s in states:
-            aut_1.addState(eval(s))
+        for state in states:
+            aut_1.addState(eval(state))
 
-        for a in arcs:
-            aut_1.addArc(eval(a[0]))
+        for arc in arcs:
+            aut_1.addArc(eval(arc[0]))
 
-        for e in alphabet:
-            aut_1.getAlphabet().addEvent(eval(e))
+        for event in alphabet:
+            aut_1.getAlphabet().addEvent(eval(event))
 
         return aut_1
     

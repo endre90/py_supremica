@@ -1,10 +1,11 @@
-from components import Automata
-from components import SynchronizationOptions
-from components import AutomataSynchronizer
+from supremica_components import Automata
+from supremica_components import SynchronizationOptions
+from supremica_components import AutomataSynchronizer
 
 class Synchronizer:
 
     def make_options(self):
+        # Using defaul options - might have to set full
         opt = SynchronizationOptions()
         opt1 = opt.make()
         return opt1
@@ -27,6 +28,8 @@ class Synchronizer:
         opts = self.make_options()
 
         synced = AutomataSynchronizer()
-        s = synced.make(auts)
-        
-        return s
+        s = synced.make(auts, opts)
+        s.execute()
+        s.getAutomaton()
+
+        return s2

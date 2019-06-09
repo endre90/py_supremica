@@ -20,9 +20,8 @@ ALPHABET = jpype.JPackage("org").supremica.automata.Alphabet
 ARC = jpype.JPackage("org").supremica.automata.Arc
 AUTOMATON = jpype.JPackage("org").supremica.automata.Automaton
 AUTOMATA = jpype.JPackage("org").supremica.automata.Automata
-SYNCHRONIZATIONOPTIONS = jpype.JPackage("org").supremica.automata.SynchronizationOptions
-AUTOMATASYNCHRONIZER = jpype.JPackage("org").supremica.automata.AutomataSynchronizer
-
+SYNCHRONIZATIONOPTIONS = jpype.JPackage("org").supremica.automata.algorithms.SynchronizationOptions
+AS = jpype.JPackage("org").supremica.automata.algorithms.AutomataSynchronizer
 
 
 class State:
@@ -58,7 +57,7 @@ class LabeledEvent:
         return e
 
 
-class Arc():
+class Arc:
 
     def make(self, fromState, toState, event):
 
@@ -76,7 +75,7 @@ class Arc():
         return arc
 
 
-class Automaton():
+class Automaton:
 
     def make(self, name):
 
@@ -85,7 +84,7 @@ class Automaton():
         return aut
 
 
-class Automata():
+class Automata:
 
     def make(self):
 
@@ -98,15 +97,15 @@ class SynchronizationOptions():
 
     def make(self):
 
-        opt = SYNCHRONIZATIONOPTIONS
+        opt = SYNCHRONIZATIONOPTIONS()
 
         return opt
 
 
-class AutomataSynchronizer():
+class AutomataSynchronizer:
 
-    def make(self, automata):
+    def make(self, automata, options):
 
-        aut = AUTOMATASYNCHRONIZER
+        aut = AS(automata, options)
 
         return aut
