@@ -1,14 +1,28 @@
 from supremica_components import Automata
+from supremica_components import SynchronizationType
 from supremica_components import SynchronizationOptions
 from supremica_components import AutomataSynchronizer
 
 class Synchronizer:
 
-    def make_options(self):
-        # Using defaul options - might have to set full
+    def make_options(self, s_type):
         opt = SynchronizationOptions()
         opt1 = opt.make()
+        opt1.setSynchronizationType(self.make_type(s_type))
         return opt1
+    
+    def make_type(self, s_type):
+        synch_type = SynchronizationType()
+        synch_type_1 = synch_type.make()
+
+        if s_type == "PRIORITIZED":
+            return synch_type_1.PRIORITIZED
+        elif s_type == "FULL":
+            return synch_type_1.FULL
+        elif s_type == "BROADCAST":
+            return synch_type_1.BROADCAST
+        else:
+            raise TypeError("Non valid syncronization type: " + s_type)
 
     def make_automata(self, automata):
 
@@ -18,18 +32,19 @@ class Synchronizer:
             aut1.addAutomaton(a)
         return aut1
 
-    def synchronize_automata(self, automata):
+    def synchronize_automata(self, automata, s_type):
 
         if not isinstance(automata, list):
             raise TypeError("Argument automata must be of type List.")
+        if not isinstance(s_type, str):
+            raise TypeError("Argument s_type must be of type String.")
 
         auts = self.make_automata(automata)
-        print(auts)
-        opts = self.make_options()
+        opts = self.make_options(s_type)
 
         synced = AutomataSynchronizer()
         s = synced.make(auts, opts)
         s.execute()
-        s.getAutomaton()
+        s2 = s.getAutomaton()
 
         return s2

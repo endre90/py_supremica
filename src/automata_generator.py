@@ -48,9 +48,6 @@ class Generator():
 
     def make_arc(self, source, sink, event):
         a = Arc()
-        print(source)
-        print(sink)
-        print(event)
         return a.make(source, sink, event)
 
     # Not used currently(alph is alph of aut):
@@ -68,6 +65,9 @@ class Generator():
 
     def make_automaton(self, name, states, alphabet, u_alphabet, arcs, init, marked, forbidden):
     
+        if "state" in states or "arc" in arcs or "event" in alphabet:
+            raise TypeError("invalid state, event or arc name.")
+
         for state in states:
             exec('{} = self.make_state({}, init, marked, forbidden)'.format(state, ('"{}"'.format(state))))
         

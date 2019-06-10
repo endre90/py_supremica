@@ -4,15 +4,17 @@
     # Endre Er{\H o}s
     # Python access for Supremica Java classes
     # V.0.0.1
-
-    # Ported classes: State, LabeledEvent, ARc
 #----------------------------------------------------------------------------------------------------------------------#
 
 import jpype
 
-CLASSPATH = "/home/endre/Supremica/dist/Supremica.jar:/home/endre/Supremica/dist/SupremicaLib.jar:/home/endre/Supremica/dist/SupremicaTest.jar"
+CLASSPATH = """/home/endre/Supremica/dist/Supremica.jar:
+               /home/endre/Supremica/dist/SupremicaLib.jar:
+               /home/endre/Supremica/dist/SupremicaTest.jar"""
+
 jpype.startJVM(jpype.getDefaultJVMPath(), "-Djava.class.path=%s" % CLASSPATH)
 
+# Automata generation classes
 STATE = jpype.JPackage("org").supremica.automata.State
 STATESET = jpype.JPackage("org").supremica.automata.StateSet
 LABELEDEVENT = jpype.JPackage("org").supremica.automata.LabeledEvent
@@ -20,8 +22,11 @@ ALPHABET = jpype.JPackage("org").supremica.automata.Alphabet
 ARC = jpype.JPackage("org").supremica.automata.Arc
 AUTOMATON = jpype.JPackage("org").supremica.automata.Automaton
 AUTOMATA = jpype.JPackage("org").supremica.automata.Automata
+
+# Syncronization classes
+SYNCHRONIZATIONTYPE = jpype.JPackage("org").supremica.automata.algorithms.SynchronizationType
 SYNCHRONIZATIONOPTIONS = jpype.JPackage("org").supremica.automata.algorithms.SynchronizationOptions
-AS = jpype.JPackage("org").supremica.automata.algorithms.AutomataSynchronizer
+AUTOMATASYNCHRONIZER = jpype.JPackage("org").supremica.automata.algorithms.AutomataSynchronizer
 
 
 class State:
@@ -102,10 +107,19 @@ class SynchronizationOptions():
         return opt
 
 
+class SynchronizationType():
+
+    def make(self):
+
+        stype = SYNCHRONIZATIONTYPE
+
+        return stype
+
+
 class AutomataSynchronizer:
 
     def make(self, automata, options):
 
-        aut = AS(automata, options)
+        aut = AUTOMATASYNCHRONIZER(automata, options)
 
         return aut
