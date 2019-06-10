@@ -1,9 +1,16 @@
+#----------------------------------------------------------------------------------------------------------------------#
+# authors, description, version
+#----------------------------------------------------------------------------------------------------------------------#
+    # Endre Er{\H o}s
+    # Automata generator using Supremica classes via supremica_components
+    # V.1.0.0.
+#----------------------------------------------------------------------------------------------------------------------#
+
 from supremica_components import State
 from supremica_components import LabeledEvent
 from supremica_components import Arc
 from supremica_components import Alphabet
 from supremica_components import Automaton
-
 
 class Generator():
 
@@ -51,17 +58,17 @@ class Generator():
         return a.make(source, sink, event)
 
     # Not used currently(alph is alph of aut):
-    def make_alphabet(self, alphabet, u_alphabet):
-        alph = Alphabet()
-        alph_1 = alph.make()
+    # def make_alphabet(self, alphabet, u_alphabet):
+        # alph = Alphabet()
+        # alph_1 = alph.make()
 
-        for e in alphabet:
-            if '!' in e:
-                alph_1.addEvent(self.set_uncontrollable(self.make_event(e)))
-            else:
-                alph_1.addEvent(self.set_controllable(self.make_event(e)))
-        
-        return alph_1
+        # for e in alphabet:
+            # if '!' in e:
+                # alph_1.addEvent(self.set_uncontrollable(self.make_event(e)))
+            # else:
+                # alph_1.addEvent(self.set_controllable(self.make_event(e)))
+        # 
+        # return alph_1
 
     def make_automaton(self, name, states, alphabet, u_alphabet, arcs, init, marked, forbidden):
     

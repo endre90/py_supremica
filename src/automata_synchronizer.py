@@ -1,3 +1,11 @@
+#----------------------------------------------------------------------------------------------------------------------#
+# authors, description, version
+#----------------------------------------------------------------------------------------------------------------------#
+    # Endre Er{\H o}s
+    # Automata synchronizer using Supremica classes via supremica_components
+    # V.1.0.0.
+#----------------------------------------------------------------------------------------------------------------------#
+
 from supremica_components import Automata
 from supremica_components import SynchronizationType
 from supremica_components import SynchronizationOptions

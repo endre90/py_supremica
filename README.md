@@ -1,0 +1,5 @@
+# py_supremica
+
+A Python interface for Supremica classes
+
+Supremica is a tool for formal verification and synthesis of discrete event control functions based on discrete event models of the uncontrolled plant and specifications of the desired closed-loop behavior. This approach has its roots in the Supervisory Control Theory, originally formulated by Ramadge and Wonham. The modeling framework in Supremica is based on finite automata extended with variables, guard conditions, and action functions. In order to handle large-scale systems of industrially interesting sizes, Supremica implements both compositional abstraction-based techniques, as well as binary decision diagram base methods. Since the modeling language and algorithms are generic these techniques are useful in many application areas including control functions implemented in hardware. Supremica has been used in a number of industrial research projects to synthesize control functions for industrial robots and flexible manufacturing systems.

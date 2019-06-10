@@ -3,11 +3,12 @@
 #----------------------------------------------------------------------------------------------------------------------#
     # Endre Er{\H o}s
     # Python access for Supremica Java classes
-    # V.0.0.1
+    # V.1.0.0.
 #----------------------------------------------------------------------------------------------------------------------#
 
 import jpype
 
+# Specify your .jar paths
 CLASSPATH = """/home/endre/Supremica/dist/Supremica.jar:
                /home/endre/Supremica/dist/SupremicaLib.jar:
                /home/endre/Supremica/dist/SupremicaTest.jar"""
