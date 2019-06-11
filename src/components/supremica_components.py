@@ -6,20 +6,13 @@
     # V.1.0.0.
 #----------------------------------------------------------------------------------------------------------------------#
 
-import jpype
+import sys
 import os
+import jpype
 
-#root = os.path.dirname(os.path.abspath(__file__))
-#CLASSPATH1 = os.path.join(root, 'archives', 'Supremica.jar')
-#CLASSPATH2 = os.path.join(root, 'archives', 'SupremicaLib.jar')
-#CLASSPATH3 = os.path.join(root, 'archives', 'SupremicaTest.jar')
-
-
-#CLASSPATH = CLASSPATH1 + ":" + CLASSPATH2 + ":" + CLASSPATH3
 CLASSPATH = """/home/endre/Supremica/dist/Supremica.jar:
                /home/endre/Supremica/dist/SupremicaLib.jar:
                /home/endre/Supremica/dist/SupremicaTest.jar"""
-print(CLASSPATH)
 
 jpype.startJVM(jpype.getDefaultJVMPath(), "-Djava.class.path=%s" % CLASSPATH)
 

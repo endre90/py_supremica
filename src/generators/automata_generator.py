@@ -6,6 +6,17 @@
     # V.1.0.0.
 #----------------------------------------------------------------------------------------------------------------------#
 
+import sys
+import os
+
+# Specify package root
+root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Look for more modules
+sys.path.append(root + "/src/generators")
+sys.path.append(root + "/src/components")
+sys.path.append(root + "/src/algorithms")
+
 from supremica_components import State
 from supremica_components import LabeledEvent
 from supremica_components import Arc
