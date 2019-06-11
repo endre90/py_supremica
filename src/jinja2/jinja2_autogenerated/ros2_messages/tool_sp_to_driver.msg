@@ -1,6 +1,6 @@
 
-bool run_forw
+bool finish
 bool run_back
+bool run_forw
 bool set_idle
 bool torque_tresh
-bool finish

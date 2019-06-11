@@ -10,7 +10,7 @@ import sys
 import os
 
 # Specify package root
-root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Look for more modules
 sys.path.append(root + "/src/generators")
