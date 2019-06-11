@@ -1,5 +1,5 @@
-from automata_generator import Generator
-from automata_synchronizer import Synchronizer
+from supremica_stuff.automata_generator import Generator
+from supremica_stuff.automata_synchronizer import Synchronizer
 
 # Define automata
 states1 = ['s1', 's2', 's3']
@@ -26,3 +26,4 @@ aut2 = g.generate_automaton('aut2', states2, alphabet2, u_alphabet2, arcs2, init
 s = Synchronizer()
 auts = s.synchronize_automata([aut1, aut2], "FULL")
 print(auts.getStates())
+print(auts.getTransitions())
