@@ -38,7 +38,7 @@ init = 'idle'
 marked = ['idle']
 forbidden = []   
 
-# Generate automata
+# Generate automaton
 g = Generator()
 aut1 = g.generate_automaton(name, states, alphabet, u_alphabet, arcs, init, marked, forbidden)
 

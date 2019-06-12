@@ -33,8 +33,11 @@ class {{ resource_name }}_sp_driver():
 
         self.timer_period = 0.1
 
-        self.{{ resource_name }}_sp_sub = self.node.create_subscription({{ message_type_sp_to_driver }}, "/{{ resource_name }}_sp_to_driver", self.{{ resource_name }}_sp_to_driver_callback)
-        self.{{ resource_name }}_sp_pub = self.node.create_publisher({{ message_type_driver_to_sp }}, "/{{ resource_name }}_driver_to_sp")
+        self.{{ resource_name }}_sp_sub = self.node.create_subscription({{ message_type_sp_to_driver }}, 
+                                                                        "/{{ resource_name }}_sp_to_driver", 
+                                                                        self.{{ resource_name }}_sp_to_driver_callback)
+        self.{{ resource_name }}_sp_pub = self.node.create_publisher({{ message_type_driver_to_sp }}, 
+                                                                        "/{{ resource_name }}_driver_to_sp")
         self.publisher_tmr = self.node.create_timer(self.timer_period, self.timer_callback)
         self.main_tmr = self.node.create_timer(self.timer_period, self.main_callback)
 
