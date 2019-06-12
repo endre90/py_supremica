@@ -21,6 +21,7 @@ from automata_generator import Generator
 from automata_synchronizer import Synchronizer
 from jinja2 import Template, Environment, PackageLoader, FileSystemLoader
 
+
 class ComponentGenerator():
 
     def automaton_based_ros2_node_gen(self, automaton):
@@ -28,7 +29,8 @@ class ComponentGenerator():
         # TODO: some assertions
 
         aut_states = []
-        aut_events = []
+        aut_contr_events = []
+        aut_uncontr_events = []
 
         templates_dir = os.path.join(root, 'src', 'jinja2', 'jinja2_templates')
         env = Environment(loader = FileSystemLoader(templates_dir))     
@@ -42,7 +44,10 @@ class ComponentGenerator():
         
         for event in automaton.getEvents():
             if eval(event.toString()) != ':accepting':
-                aut_events.append(eval(event.toString()))
+                if event.isControllable():
+                    aut_contr_events.append(eval(event.toString()))
+                if not event.isControllable():
+                    aut_uncontr_events.append(eval(event.toString()))
 
         # Generate ROS2 node
         with open(node_filename, 'w') as fh:
@@ -52,15 +57,18 @@ class ComponentGenerator():
                 message_type_sp_to_driver = '{}_sp_to_driver'.format(automaton.getName()),
                 message_type_driver_to_sp = '{}_driver_to_sp'.format(automaton.getName()),
                 states = aut_states,
-                commands = aut_events,
+                commands = aut_contr_events,
+                replies = aut_uncontr_events,
             ))
         
+
     def automaton_based_ros2_msg_gen(self, automaton):
 
         # TODO: some assertions
 
         aut_states = []
-        aut_events = []
+        aut_contr_events = []
+        aut_uncontr_events = []
 
         templates_dir = os.path.join(root, 'src', 'jinja2', 'jinja2_templates')
         env = Environment(loader = FileSystemLoader(templates_dir))
@@ -76,17 +84,31 @@ class ComponentGenerator():
         
         for event in automaton.getEvents():
             if eval(event.toString()) != ':accepting':
-                aut_events.append(eval(event.toString()))
+                if event.isControllable():
+                    aut_contr_events.append(eval(event.toString()))
+                if not event.isControllable():
+                    aut_uncontr_events.append(eval(event.toString()))
+
 
         # Generate message
         with open(sp_to_driver_msg_filename, 'w') as fh:
             fh.write(sp_to_driver_msg_template.render(
-                commands = aut_events,
+                commands = aut_contr_events,
+                replies = aut_uncontr_events,
             ))
 
         # Generate message
         with open(driver_to_sp_msg_filename, 'w') as fh:
             fh.write(driver_to_sp_msg_template.render(
-                commands = aut_events,
+                commands = aut_contr_events,
+                replies = aut_uncontr_events,
                 states = aut_states,
             ))
+        
+
+    def efa_based_ros2_node_gen(self, efa):
+        return("Not implemented yet")
+    
+
+    def efa_based_ros2_msg_gen(self, efa):
+        return("Not implemented yet")

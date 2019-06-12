@@ -27,10 +27,10 @@ class tool_sp_driver():
         self.running_forw = 0
         self.torque_reached = 0
         
-        self.finish = 0
         self.run_back = 0
         self.run_forw = 0
         self.set_idle = 0
+        
         self.torque_tresh = 0
 
         self.timer_period = 0.1
@@ -47,29 +47,38 @@ class tool_sp_driver():
 
     def timer_callback(self):
         
+        self.msg_driver_to_sp.got_run_back = self.run_back
+        self.msg_driver_to_sp.got_run_forw = self.run_forw
+        self.msg_driver_to_sp.got_set_idle = self.set_idle
+        
         self.msg_driver_to_sp.idle = self.idle
         self.msg_driver_to_sp.running_back = self.running_back
         self.msg_driver_to_sp.running_forw = self.running_forw
         self.msg_driver_to_sp.torque_reached = self.torque_reached
+        
+        self.msg_driver_to_sp.torque_tresh = self.torque_tresh
 
         self.pub.publish(self.msg_driver_to_sp)
 
 
     def tool_sp_to_driver_callback(self, data):
         
-        if self.data.finish == 1:
-            # Do something here
-        if self.data.run_back == 1:
-            # Do something here
-        if self.data.run_forw == 1:
-            # Do something here
-        if self.data.set_idle == 1:
-            # Do something here
-        if self.data.torque_tresh == 1:
-            # Do something here
+        self.run_back = data.run_back
+        self.run_forw = data.run_forw
+        self.set_idle = data.set_idle
+        
+        if self.run_back == 1:
+        # Do something here
+        if self.run_forw == 1:
+        # Do something here
+        if self.set_idle == 1:
+        # Do something here
 
 
     def main_callback(self):
+        
+        # have to send an torque_tresh event back to SP in the state msg
+        # or keep state in the node istelf and update just the "torque_reached" line?
         
         # collect the idle state here
         # collect the running_back state here

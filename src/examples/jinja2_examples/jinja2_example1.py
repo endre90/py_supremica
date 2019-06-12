@@ -26,12 +26,12 @@ from jinja2 import Template, Environment, PackageLoader, FileSystemLoader
 # Define the automaton
 name = 'tool'
 states = ['idle', 'running_forw', 'running_back', 'torque_reached']
-alphabet = ['run_forw', 'run_back', 'set_idle', 'torque_tresh', 'finish']
-u_alphabet = ['torque_tresh', 'finish']
+alphabet = ['run_forw', 'run_back', 'set_idle', 'torque_tresh']
+u_alphabet = ['torque_tresh']
 arcs = [('t1', 'idle', 'running_forw', 'run_forw'),
         ('t2', 'running_forw', 'torque_reached', 'torque_tresh'),
         ('t3', 'running_forw', 'idle', 'set_idle'),
-        ('t4', 'torque_reached', 'idle', 'finish'),
+        ('t4', 'torque_reached', 'idle', 'set_idle'),
         ('t5', 'idle', 'running_back', 'run_back'),
         ('t6', 'running_back', 'idle', 'set_idle')]
 init = 'idle'

@@ -27,6 +27,9 @@ class {{ resource_name }}_sp_driver():
         {% for item in commands %}
         self.{{ item }} = 0
         {%- endfor %}
+        {% for item in replies %}
+        self.{{ item }} = 0
+        {%- endfor %}
 
         self.timer_period = 0.1
 
@@ -41,7 +44,13 @@ class {{ resource_name }}_sp_driver():
     
 
     def timer_callback(self):
+        {% for item in commands %}
+        self.msg_driver_to_sp.got_{{ item }} = self.{{ item }}
+        {%- endfor %}
         {% for item in states %}
+        self.msg_driver_to_sp.{{ item }} = self.{{ item }}
+        {%- endfor %}
+        {% for item in replies %}
         self.msg_driver_to_sp.{{ item }} = self.{{ item }}
         {%- endfor %}
 
@@ -50,12 +59,19 @@ class {{ resource_name }}_sp_driver():
 
     def {{ resource_name }}_sp_to_driver_callback(self, data):
         {% for item in commands %}
-        if self.data.{{ item }} == 1:
-            # Do something here
+        self.{{ item }} = data.{{ item }}
+        {%- endfor %}
+        {% for item in commands %}
+        if self.{{ item }} == 1:
+        # Do something here
         {%- endfor %}
 
 
     def main_callback(self):
+        {% for item in replies %}
+        # have to send an {{ item }} event back to SP in the state msg
+        # or keep state in the node istelf and update just the "torque_reached" line?
+        {%- endfor %}
         {% for item in states %}
         # collect the {{ item }} state here
         {%- endfor %}
