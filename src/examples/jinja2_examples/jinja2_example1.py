@@ -46,5 +46,9 @@ aut1 = g.generate_automaton(name, states, alphabet, u_alphabet, arcs, init, mark
 c = ComponentGenerator()
 c.automaton_based_ros2_node_gen(aut1)
 
+# Generate ROS2 emulator node
+c.automaton_based_ros2_emulator_node_gen(aut1)
+c.automaton_based_ros2_emulator_msg_gen(aut1)
+
 # Generate ROS2 messages
 c.automaton_based_ros2_msg_gen(aut1)
