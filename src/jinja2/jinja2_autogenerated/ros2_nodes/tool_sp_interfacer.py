@@ -28,10 +28,13 @@ class tool_sp_interfacer():
         
         self.idle = False
         self.running_forw = False
+        self.running_back = False
         self.torque_reached = False
+        self.untightened = False
         
         self.set_idle = False
         self.set_running_forw = False
+        self.set_running_back = False
 
         self.tool_sp_sub = self.node.create_subscription(Toolsptointerfacer, 
                                                                         "/tool_sp_to_interfacer", 
@@ -55,6 +58,8 @@ class tool_sp_interfacer():
         self.msg_interfacer_to_driver.set_idle = self.set_idle
         self.set_running_forw = data.set_running_forw
         self.msg_interfacer_to_driver.set_running_forw = self.set_running_forw
+        self.set_running_back = data.set_running_back
+        self.msg_interfacer_to_driver.set_running_back = self.set_running_back
         self.tool_driver_pub.publish(self.msg_interfacer_to_driver)
 
     # Just forwarding from one of the lower nodes to to based on the launch spec
@@ -64,11 +69,16 @@ class tool_sp_interfacer():
         self.msg_interfacer_to_sp.idle = self.idle
         self.running_forw = data.running_forw
         self.msg_interfacer_to_sp.running_forw = self.running_forw
+        self.running_back = data.running_back
+        self.msg_interfacer_to_sp.running_back = self.running_back
         self.torque_reached = data.torque_reached
         self.msg_interfacer_to_sp.torque_reached = self.torque_reached
+        self.untightened = data.untightened
+        self.msg_interfacer_to_sp.untightened = self.untightened
         
         self.msg_interfacer_to_sp.got_set_idle = self.set_idle
         self.msg_interfacer_to_sp.got_set_running_forw = self.set_running_forw
+        self.msg_interfacer_to_sp.got_set_running_back = self.set_running_back
 
         self.tool_sp_pub.publish(self.msg_interfacer_to_sp)
 
