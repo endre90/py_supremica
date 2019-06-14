@@ -9,10 +9,10 @@
 import sys
 import rclpy
 import time
-from ros_autogen_testing import tool_sp_to_interfacer
-from ros_autogen_testing import tool_interfacer_to_sp
-from ros_autogen_testing import tool_driver_to_interfacer
-from ros_autogen_testing import tool_interfacer_to_driver
+from unification_ros2_messages.msg import Toolsptointerfacer
+from unification_ros2_messages.msg import Toolinterfacertosp
+from unification_ros2_messages.msg import Tooldrivertointerfacer
+from unification_ros2_messages.msg import Toolinterfacertodriver
 
 class tool_sp_interfacer():
 
@@ -21,29 +21,27 @@ class tool_sp_interfacer():
         rclpy.init(args=args)
 
         self.node = rclpy.create_node("tool_sp_interfacer")
-        self.msg_sp_to_interfacer = tool_sp_to_interfacer()
-        self.msg_interfacer_to_sp = tool_interfacer_to_sp()
-        self.msg_driver_to_interfacer = tool_driver_to_interfacer()
-        self.msg_interfacer_to_driver = tool_interfacer_to_driver()
+        self.msg_sp_to_interfacer = Toolsptointerfacer()
+        self.msg_interfacer_to_sp = Toolinterfacertosp()
+        self.msg_driver_to_interfacer = Tooldrivertointerfacer()
+        self.msg_interfacer_to_driver = Toolinterfacertodriver()
         
-        self.idle = 0
-        self.running_forw = 0
-        self.torque_reached = 0
+        self.idle = False
+        self.running_forw = False
+        self.torque_reached = False
         
-        self.set_idle = 0
-        self.set_running_forw = 0
+        self.set_idle = False
+        self.set_running_forw = False
 
-        self.timer_period = 0.1
-
-        self.tool_sp_sub = self.node.create_subscription(tool_sp_to_interfacer, 
+        self.tool_sp_sub = self.node.create_subscription(Toolsptointerfacer, 
                                                                         "/tool_sp_to_interfacer", 
                                                                         self.tool_sp_to_interfacer_callback)
-        self.tool_sp_pub = self.node.create_publisher(tool_interfacer_to_sp, 
+        self.tool_sp_pub = self.node.create_publisher(Toolinterfacertosp, 
                                                                         "/tool_interfacer_to_sp")
-        self.tool_driver_sub = self.node.create_subscription(tool_driver_to_interfacer, 
+        self.tool_driver_sub = self.node.create_subscription(Tooldrivertointerfacer, 
                                                                         "/tool_driver_to_interfacer", 
                                                                         self.tool_driver_to_interfacer_callback)
-        self.tool_driver_pub = self.node.create_publisher(tool_interfacer_to_driver, 
+        self.tool_driver_pub = self.node.create_publisher(Toolinterfacertodriver, 
                                                                         "/tool_interfacer_to_driver")
 
         rclpy.spin(self.node)
@@ -51,19 +49,28 @@ class tool_sp_interfacer():
         rclpy.shutdown()
     
     # Just forwarding from sp to one of the lower nodes based on the launch spec
-    def self.tool_sp_to_interfacer_callback(self, data):
+    def tool_sp_to_interfacer_callback(self, data):
         
-        self.msg_interfacer_to_driver.set_idle = data.set_idle
-        self.msg_interfacer_to_driver.set_running_forw = data.set_running_forw
-        self.pub.publish(self.msg_interfacer_to_driver)
+        self.set_idle = data.set_idle
+        self.msg_interfacer_to_driver.set_idle = self.set_idle
+        self.set_running_forw = data.set_running_forw
+        self.msg_interfacer_to_driver.set_running_forw = self.set_running_forw
+        self.tool_driver_pub.publish(self.msg_interfacer_to_driver)
 
     # Just forwarding from one of the lower nodes to to based on the launch spec
-    def self.tool_driver_to_interfacer_callback(self, data):
+    def tool_driver_to_interfacer_callback(self, data):
         
-        self.msg_interfacer_to_sp.idle = data.idle
-        self.msg_interfacer_to_sp.running_forw = data.running_forw
-        self.msg_interfacer_to_sp.torque_reached = data.torque_reached
-        self.pub.publish(self.msg_interfacer_to_sp)
+        self.idle = data.idle
+        self.msg_interfacer_to_sp.idle = self.idle
+        self.running_forw = data.running_forw
+        self.msg_interfacer_to_sp.running_forw = self.running_forw
+        self.torque_reached = data.torque_reached
+        self.msg_interfacer_to_sp.torque_reached = self.torque_reached
+        
+        self.msg_interfacer_to_sp.got_set_idle = self.set_idle
+        self.msg_interfacer_to_sp.got_set_running_forw = self.set_running_forw
+
+        self.tool_sp_pub.publish(self.msg_interfacer_to_sp)
 
 if __name__ == '__main__':
     tool_sp_interfacer()

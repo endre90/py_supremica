@@ -9,10 +9,10 @@
 import sys
 import rclpy
 import time
-from {{ package_name }} import {{ message_type_sp_to_interfacer }}
-from {{ package_name }} import {{ message_type_interfacer_to_sp }}
-from {{ package_name }} import {{ message_type_driver_to_interfacer }}
-from {{ package_name }} import {{ message_type_interfacer_to_driver }}
+from {{ package_name }}.msg import {{ message_type_sp_to_interfacer }}
+from {{ package_name }}.msg import {{ message_type_interfacer_to_sp }}
+from {{ package_name }}.msg import {{ message_type_driver_to_interfacer }}
+from {{ package_name }}.msg import {{ message_type_interfacer_to_driver }}
 
 class {{ resource_name }}_sp_interfacer():
 
@@ -26,13 +26,11 @@ class {{ resource_name }}_sp_interfacer():
         self.msg_driver_to_interfacer = {{ message_type_driver_to_interfacer }}()
         self.msg_interfacer_to_driver = {{ message_type_interfacer_to_driver }}()
         {% for item in measured_variables %}
-        self.{{ item }} = 0
+        self.{{ item }} = False
         {%- endfor %}
         {% for item in command_variables %}
-        self.{{ item }} = 0
+        self.{{ item }} = False
         {%- endfor %}
-
-        self.timer_period = 0.1
 
         self.{{ resource_name }}_sp_sub = self.node.create_subscription({{ message_type_sp_to_interfacer }}, 
                                                                         "/{{ resource_name }}_sp_to_interfacer", 
@@ -50,18 +48,24 @@ class {{ resource_name }}_sp_interfacer():
         rclpy.shutdown()
     
     # Just forwarding from sp to one of the lower nodes based on the launch spec
-    def self.{{ resource_name }}_sp_to_interfacer_callback(self, data):
+    def {{ resource_name }}_sp_to_interfacer_callback(self, data):
         {% for item in command_variables %}
-        self.msg_interfacer_to_driver.{{ item }} = data.{{ item }}
+        self.{{ item }} = data.{{ item }}
+        self.msg_interfacer_to_driver.{{ item }} = self.{{ item }}
         {%- endfor %}
-        self.pub.publish(self.msg_interfacer_to_driver)
+        self.{{ resource_name }}_driver_pub.publish(self.msg_interfacer_to_driver)
 
     # Just forwarding from one of the lower nodes to to based on the launch spec
-    def self.{{ resource_name }}_driver_to_interfacer_callback(self, data):
+    def {{ resource_name }}_driver_to_interfacer_callback(self, data):
         {% for item in measured_variables %}
-        self.msg_interfacer_to_sp.{{ item }} = data.{{ item }}
+        self.{{ item }} = data.{{ item }}
+        self.msg_interfacer_to_sp.{{ item }} = self.{{ item }}
         {%- endfor %}
-        self.pub.publish(self.msg_interfacer_to_sp)
+        {% for item in command_variables %}
+        self.msg_interfacer_to_sp.got_{{ item }} = self.{{ item }}
+        {%- endfor %}
+
+        self.{{ resource_name }}_sp_pub.publish(self.msg_interfacer_to_sp)
 
 if __name__ == '__main__':
     {{ resource_name }}_sp_interfacer()

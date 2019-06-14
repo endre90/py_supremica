@@ -9,8 +9,8 @@
 import sys
 import rclpy
 import time
-from ros_autogen_testing import tool_driver_to_interfacer
-from ros_autogen_testing import tool_interfacer_to_driver
+from unification_ros2_messages.msg import Tooldrivertointerfacer
+from unification_ros2_messages.msg import Toolinterfacertodriver
 
 class tool_sp_emulator():
 
@@ -19,43 +19,43 @@ class tool_sp_emulator():
         rclpy.init(args=args)
 
         self.node = rclpy.create_node("tool_sp_emulator")
-        self.msg_driver_to_interfacer = tool_driver_to_interfacer()
-        self.msg_interfacer_to_driver = tool_interfacer_to_driver()
+        self.msg_emulator_to_interfacer = Tooldrivertointerfacer()
+        self.msg_interfacer_to_emulator = Toolinterfacertodriver()
         
-        self.idle = 0
-        self.running_forw = 0
-        self.torque_reached = 0
+        self.idle = False
+        self.running_forw = False
+        self.torque_reached = False
         
-        self.set_idle = 0
-        self.set_running_forw = 0
+        self.set_idle = False
+        self.set_running_forw = False
 
-        self.predicates = [self.idle and not self.running_forw and self.set_idle and not self.set_running_forw,
-                           not self.set_idle and self.set_running_forw and not self.running_forw,
-                           not self.set_idle and self.set_running_forw and self.running_forw,
-                           not self.set_idle and self.set_running_forw and self.torque_reached,
-                           self.set_idle and not self.set_running_forw and self.running_forw,
+        self.predicates = ['self.idle and not self.running_forw and self.set_idle and not self.set_running_forw',
+                           'not self.set_idle and self.set_running_forw and not self.running_forw',
+                           'not self.set_idle and self.set_running_forw and self.running_forw',
+                           'not self.set_idle and self.set_running_forw and self.torque_reached',
+                           'self.set_idle and not self.set_running_forw and self.running_forw',
                            ]
 
-        self.actions = [['set_idle = False', 'set_running_forw = True'],
+        self.actions = [['self.set_idle = False', 'self.set_running_forw = True'],
                         [],
                         [],
-                        ['set_idle = True', 'set_running_forw = False'],
+                        ['self.set_idle = True', 'self.set_running_forw = False'],
                         [],
                         ]
         
         self.effects = [[],
-                        ['idle = False', 'running_forw = True'],
-                        ['torque_reached = True'],
+                        ['self.idle = False', 'self.running_forw = True'],
+                        ['self.torque_reached = True'],
                         [],
-                        ['idle = True', 'running_forw = False'],
+                        ['self.idle = True', 'self.running_forw = False'],
                         ]
-                        
-        self.timer_period = 0.1
 
-        self.tool_interfacer_sub = self.node.create_subscription(tool_interfacer_to_driver, 
+        self.timer_period = 0.5
+
+        self.tool_interfacer_sub = self.node.create_subscription(Toolinterfacertodriver, 
                                                                         "/tool_interfacer_to_driver", 
                                                                         self.tool_interfacer_to_driver_callback)
-        self.tool_interfacer_pub = self.node.create_publisher(tool_driver_to_interfacer, 
+        self.tool_interfacer_pub = self.node.create_publisher(Tooldrivertointerfacer, 
                                                                         "/tool_driver_to_interfacer")
         
         self.main_tmr = self.node.create_timer(self.timer_period, self.main_callback)
@@ -75,8 +75,8 @@ class tool_sp_emulator():
 
     def main_callback(self):
         for pred in self.predicates:
-            if pred:
-                for effect in self.effect[index(pred)]:
+            if eval(pred):
+                for effect in self.effects[self.predicates.index(pred)]:
                     exec(effect)
         
         
@@ -86,7 +86,5 @@ class tool_sp_emulator():
 
         self.tool_interfacer_pub.publish(self.msg_emulator_to_interfacer)
 
-
-    
 if __name__ == '__main__':
     tool_sp_emulator()

@@ -9,8 +9,8 @@
 import sys
 import rclpy
 import time
-from {{ package_name }} import {{ message_type_driver_to_interfacer }}
-from {{ package_name }} import {{ message_type_interfacer_to_driver }}
+from {{ package_name }}.msg import {{ message_type_driver_to_interfacer }}
+from {{ package_name }}.msg import {{ message_type_interfacer_to_driver }}
 
 class {{ resource_name }}_sp_emulator():
 
@@ -19,17 +19,17 @@ class {{ resource_name }}_sp_emulator():
         rclpy.init(args=args)
 
         self.node = rclpy.create_node("{{ resource_name }}_sp_emulator")
-        self.msg_driver_to_interfacer = {{ message_type_driver_to_interfacer }}()
-        self.msg_interfacer_to_driver = {{ message_type_interfacer_to_driver }}()
+        self.msg_emulator_to_interfacer = {{ message_type_driver_to_interfacer }}()
+        self.msg_interfacer_to_emulator = {{ message_type_interfacer_to_driver }}()
         {% for item in msr_vars %}
-        self.{{ item }} = 0
+        self.{{ item }} = False
         {%- endfor %}
         {% for item in cmd_vars%}
-        self.{{ item }} = 0
+        self.{{ item }} = False
         {%- endfor %}
 
         self.predicates = [{% for item in predicates -%}
-                           {{ item }},
+                           '{{ item }}',
                            {% endfor -%}]
 
         self.actions = [{% for item in actions -%}
@@ -39,8 +39,8 @@ class {{ resource_name }}_sp_emulator():
         self.effects = [{% for item in effects -%}
                         {{ item }},
                         {% endfor -%}]
-                        
-        self.timer_period = 0.1
+
+        self.timer_period = 0.5
 
         self.{{ resource_name }}_interfacer_sub = self.node.create_subscription({{ message_type_interfacer_to_driver }}, 
                                                                         "/{{ resource_name }}_interfacer_to_driver", 
@@ -64,8 +64,8 @@ class {{ resource_name }}_sp_emulator():
 
     def main_callback(self):
         for pred in self.predicates:
-            if pred:
-                for effect in self.effect[index(pred)]:
+            if eval(pred):
+                for effect in self.effects[self.predicates.index(pred)]:
                     exec(effect)
         
         {% for item in msr_vars %}
@@ -74,7 +74,5 @@ class {{ resource_name }}_sp_emulator():
 
         self.{{ resource_name }}_interfacer_pub.publish(self.msg_emulator_to_interfacer)
 
-
-    
 if __name__ == '__main__':
     {{ resource_name }}_sp_emulator()

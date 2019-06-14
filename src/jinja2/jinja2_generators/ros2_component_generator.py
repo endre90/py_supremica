@@ -191,7 +191,7 @@ class ComponentGenerator():
                 states = aut_states,
             ))
 
-    def sp_model_based_ros2_sp_driver_node_gen(self, name, variables, updates):
+    def sp_model_based_ros2_sp_interfacer_node_gen(self, name, variables, updates):
         
         # TODO: some assertions
 
@@ -216,17 +216,17 @@ class ComponentGenerator():
         with open(node_filename, 'w') as fh:
             fh.write(node_template.render(
                 resource_name = name,
-                package_name = "ros_autogen_testing",
-                message_type_sp_to_interfacer = '{}_sp_to_interfacer'.format(name),
-                message_type_interfacer_to_sp = '{}_interfacer_to_sp'.format(name),
-                message_type_driver_to_interfacer = '{}_driver_to_interfacer'.format(name),
-                message_type_interfacer_to_driver = '{}_interfacer_to_driver'.format(name),
+                package_name = "unification_ros2_messages",
+                message_type_sp_to_interfacer = '{}sptointerfacer'.format('Tool'),
+                message_type_interfacer_to_sp = '{}interfacertosp'.format('Tool'),
+                message_type_driver_to_interfacer = '{}drivertointerfacer'.format('Tool'),
+                message_type_interfacer_to_driver = '{}interfacertodriver'.format('Tool'),
                 command_variables = cmd_vars,
                 measured_variables = msr_vars,
             ))
         pass
     
-    def sp_model_based_ros2_emulator_node_gen(self, name, variables, updates):
+    def sp_model_based_ros2_sp_emulator_node_gen(self, name, variables, updates):
 
         cmd_vars = []
         msr_vars = []
@@ -249,7 +249,9 @@ class ComponentGenerator():
                 else:
                     predicate = predicate + "self." + elem + " and "
             predicates.append(predicate[:-5])
+            update[1][1] = ['self.{}'.format(action) for action in update[1][1]]
             actions.append(update[1][1])
+            update[2] = ['self.{}'.format(effect) for effect in update[2]]
             effects.append(update[2]) 
         
         print(predicates)
@@ -268,9 +270,9 @@ class ComponentGenerator():
         with open(node_filename, 'w') as fh:
             fh.write(node_template.render(
                 resource_name = name,
-                package_name = "ros_autogen_testing",
-                message_type_interfacer_to_driver = '{}_interfacer_to_driver'.format(name),
-                message_type_driver_to_interfacer = '{}_driver_to_interfacer'.format(name),
+                package_name = "unification_ros2_messages",
+                message_type_interfacer_to_driver = '{}interfacertodriver'.format('Tool'), # fix this hack
+                message_type_driver_to_interfacer = '{}drivertointerfacer'.format('Tool'),
                 cmd_vars = cmd_vars,
                 msr_vars = msr_vars,
                 predicates = predicates,
