@@ -63,10 +63,16 @@ class {{ resource_name }}_sp_emulator():
 
 
     def main_callback(self):
+        #have to evaluate all predicates first and only then execute the effects
+        store_eval_indexes = []
         for pred in self.predicates:
             if eval(pred):
-                for effect in self.effects[self.predicates.index(pred)]:
-                    exec(effect)
+                store_eval_indexes.append(self.predicates.index(pred))
+
+        for store_eval_index in store_eval_indexes:
+            for effect in self.effects[store_eval_index]:
+                print(effect)
+                exec(effect)
         
         {% for item in msr_vars %}
         self.msg_emulator_to_interfacer.{{ item }} = self.{{ item }}
