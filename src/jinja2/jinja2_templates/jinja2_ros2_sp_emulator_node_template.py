@@ -9,8 +9,8 @@
 import sys
 import rclpy
 import time
-from {{ package_name }} import {{ message_type_driver_to_emulator }}
-from {{ package_name }} import {{ message_type_emulator_to_driver }}
+from {{ package_name }} import {{ message_type_driver_to_interfacer }}
+from {{ package_name }} import {{ message_type_interfacer_to_driver }}
 
 class {{ resource_name }}_sp_emulator():
 
@@ -19,26 +19,35 @@ class {{ resource_name }}_sp_emulator():
         rclpy.init(args=args)
 
         self.node = rclpy.create_node("{{ resource_name }}_sp_emulator")
-        self.msg_emulator_to_driver = {{ message_type_emulator_to_driver }}()
-        self.msg_driver_to_emulator = {{ message_type_driver_to_emulator }}()
-        {% for item in states %}
+        self.msg_driver_to_interfacer = {{ message_type_driver_to_interfacer }}()
+        self.msg_interfacer_to_driver = {{ message_type_interfacer_to_driver }}()
+        {% for item in msr_vars %}
         self.{{ item }} = 0
         {%- endfor %}
-        {% for item in commands %}
-        self.{{ item }} = 0
-        {%- endfor %}
-        {% for item in replies %}
+        {% for item in cmd_vars%}
         self.{{ item }} = 0
         {%- endfor %}
 
+        self.predicates = [{% for item in predicates -%}
+                           {{ item }},
+                           {% endfor -%}]
+
+        self.actions = [{% for item in actions -%}
+                        {{ item }},
+                        {% endfor -%}]
+        
+        self.effects = [{% for item in effects -%}
+                        {{ item }},
+                        {% endfor -%}]
+                        
         self.timer_period = 0.1
 
-        self.{{ resource_name }}_emulator_sub = self.node.create_subscription({{ message_type_driver_to_emulator }}, 
-                                                                        "/{{ resource_name }}_driver_to_emulator", 
-                                                                        self.{{ resource_name }}_driver_to_emulator_callback)
-        self.{{ resource_name }}_emulator_pub = self.node.create_publisher({{ message_type_emulator_to_driver }}, 
-                                                                        "/{{ resource_name }}_emulator_to_driver")
-        self.publisher_tmr = self.node.create_timer(self.timer_period, self.timer_callback)
+        self.{{ resource_name }}_interfacer_sub = self.node.create_subscription({{ message_type_interfacer_to_driver }}, 
+                                                                        "/{{ resource_name }}_interfacer_to_driver", 
+                                                                        self.{{ resource_name }}_interfacer_to_driver_callback)
+        self.{{ resource_name }}_interfacer_pub = self.node.create_publisher({{ message_type_driver_to_interfacer }}, 
+                                                                        "/{{ resource_name }}_driver_to_interfacer")
+        
         self.main_tmr = self.node.create_timer(self.timer_period, self.main_callback)
 
         rclpy.spin(self.node)
@@ -46,34 +55,26 @@ class {{ resource_name }}_sp_emulator():
         rclpy.shutdown()
     
 
-    def timer_callback(self):
-        {% for item in states %}
-        self.msg_emulator_to_driver.{{ item }} = self.{{ item }}
-        {%- endfor %}
-
-        self.pub.publish(self.msg_emulator_to_driver)
-
-
-    def {{ resource_name }}_driver_to_emulator_callback(self, data):
-        {% for item in commands %}
+    def {{ resource_name }}_interfacer_to_driver_callback(self, data):
+        {% for item in cmd_vars %}
         self.{{ item }} = data.{{ item }}
-        {%- endfor %}
-        {% for item in commands %}
-        if self.{{ item }} == 1:
-        # Do something here
+        self.msg_emulator_to_interfacer.got_{{ item }} = self.{{ item }}
         {%- endfor %}
 
 
     def main_callback(self):
-        {% for item in replies %}
-        # have to send an {{ item }} event back to SP in the state msg
-        # or keep state in the node istelf and update just the "torque_reached" line?
-        {%- endfor %}
-        {% for item in states %}
-        # collect the {{ item }} state here
+        for pred in self.predicates:
+            if pred:
+                for effect in self.effect[index(pred)]:
+                    exec(effect)
+        
+        {% for item in msr_vars %}
+        self.msg_emulator_to_interfacer.{{ item }} = self.{{ item }}
         {%- endfor %}
 
-        # define stuff here manually
+        self.{{ resource_name }}_interfacer_pub.publish(self.msg_emulator_to_interfacer)
 
+
+    
 if __name__ == '__main__':
-    {{ resource_name }}_emulator()
+    {{ resource_name }}_sp_emulator()

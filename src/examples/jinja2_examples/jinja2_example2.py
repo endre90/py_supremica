@@ -27,11 +27,11 @@ variables = ['set_idle', 'set_running_forw', 'idle', 'running_forw', 'torque_rea
 #                  (name, ([current_values], [updated_values]), effects) and so on...]
 #                   
 # have to assert if all have _C or _M and if all of them are in variables
-updates = [('enabled', (['idle', 'not running_forw', 'set_idle', 'not set_running_forw'], ['set_idle = False', 'set_running_forw = True']), []),
-           ('starting', (['not set_idle', 'set_running_forw', 'not running_forw'], []), ['idle = False', 'running_forw = True']),
-           ('executing', (['not set_idle', 'set_running_forw', 'running_forw'], []), ['torque_reached = True']),
-           ('finished', (['not set_idle', 'set_running_forw', 'torque_reached'], ['set_idle = True', 'set_running_forw = False']), []),
-           ('resetting', (['set_idle', 'not set_running_forw', 'running_forw'], []), ['idle = True', 'running_forw = False'])]
+updates = [('enabled', (['idle', '!running_forw', 'set_idle', '!set_running_forw'], ['set_idle = False', 'set_running_forw = True']), []),
+           ('starting', (['!set_idle', 'set_running_forw', '!running_forw'], []), ['idle = False', 'running_forw = True']),
+           ('executing', (['!set_idle', 'set_running_forw', 'running_forw'], []), ['torque_reached = True']),
+           ('finished', (['!set_idle', 'set_running_forw', 'torque_reached'], ['set_idle = True', 'set_running_forw = False']), []),
+           ('resetting', (['set_idle', '!set_running_forw', 'running_forw'], []), ['idle = True', 'running_forw = False'])]
 
 c = ComponentGenerator()
 c.sp_model_based_ros2_emulator_node_gen(name, variables, updates)
