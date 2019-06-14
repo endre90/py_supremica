@@ -25,7 +25,7 @@ variables = ['set_idle', 'set_running_forw', 'idle', 'running_forw', 'torque_rea
 # updates format: [(name, ([current_values], [updated_values]), effects),
 #                  (name, ([current_values], [updated_values]), effects),
 #                  (name, ([current_values], [updated_values]), effects) and so on...]
-#                   
+#
 # have to assert if all have _C or _M and if all of them are in variables
 updates = [['enabled', [['idle', '!running_forw', 'set_idle', '!set_running_forw'], ['set_idle = False', 'set_running_forw = True']], []],
            ['starting', [['!set_idle', 'set_running_forw', '!running_forw'], []], ['idle = False', 'running_forw = True']],
@@ -36,3 +36,4 @@ updates = [['enabled', [['idle', '!running_forw', 'set_idle', '!set_running_forw
 c = ComponentGenerator()
 c.sp_model_based_ros2_sp_emulator_node_gen(name, variables, updates)
 c.sp_model_based_ros2_sp_interfacer_node_gen(name, variables, updates)
+c.sp_model_based_ros2_node_tests_gen(name, variables, updates)
