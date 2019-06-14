@@ -226,22 +226,51 @@ class ComponentGenerator():
             ))
         pass
     
+    def list_diff(self, first, second):
+        return [item for item in first if item not in second]
+    
+    def remove_duplicates(self, items): 
+        unique = [] 
+        for item in items: 
+            if item not in unique: 
+                unique.append(item) 
+        return unique 
+
+
     def sp_model_based_ros2_sp_emulator_node_gen(self, name, variables, updates):
 
         cmd_vars = []
         msr_vars = []
+        only_msr_vars = []
         predicates = []
         actions = []
         effects = []
+        add_effects = []
+        paired = []
+        multi = []
 
         for variable in variables:
             if 'set_' in variable:
                 cmd_vars.append(variable)
             else:
                 msr_vars.append(variable)
+
+        # isolate the measured only variables like torque_reached for instance
+        # this works if there is not a type 1 variable (command only), if there is, 
+        # than this should be done with some tagging instead...
+        for variable in variables:
+            if variable in msr_vars:
+                for cmd_var in cmd_vars:
+                    if variable in cmd_var:
+                        paired.append(variable)
+                    if variable not in cmd_var:
+                        multi.append(variable)
+        
+        only_msr_vars = self.remove_duplicates(self.list_diff(multi, paired))
+        # print(only_msr_vars)
         
         for update in updates:
-            print(update)
+            #print(update)
             predicate = ''
             for elem in update[1][0]:
                 if "!" in elem:
@@ -251,6 +280,29 @@ class ComponentGenerator():
             predicates.append(predicate[:-5])
             update[1][1] = ['self.{}'.format(action) for action in update[1][1]]
             actions.append(update[1][1])
+
+            for only_msr_var in only_msr_vars:
+                for eff in update[2]:
+                    add_effect = []
+                    if only_msr_var in eff:
+                        print(eff)
+                        if "True" in eff:
+                            add_effect = [only_msr_var + " = False", only_msr_var + " = True", updates.index(update)] # What to insert and where NOT to insert it
+                        elif "False" in eff:
+                            add_effect = [only_msr_var + " = True", only_msr_var + " = False", updates.index(update)] # What to insert and where NOT to insert it
+                    if add_effect != []:
+                        add_effects.append(add_effect)
+
+        print(add_effects)
+
+        for update in updates:
+            for add_effect in add_effects:
+                if add_effect[1] != updates.index(update):
+                    if add_effect[0] not in update[2]:
+                        if add_effect[1] not in update[2]:
+                            update[2].append(add_effect[0])
+        
+
             update[2] = ['self.{}'.format(effect) for effect in update[2]]
             effects.append(update[2]) 
         

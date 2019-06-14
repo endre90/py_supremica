@@ -43,11 +43,11 @@ class tool_sp_emulator():
                         [],
                         ]
         
-        self.effects = [[],
-                        ['self.idle = False', 'self.running_forw = True'],
+        self.effects = [['self.torque_reached = False'],
+                        ['self.idle = False', 'self.running_forw = True', 'self.torque_reached = False'],
                         ['self.torque_reached = True'],
-                        [],
-                        ['self.idle = True', 'self.running_forw = False'],
+                        ['self.torque_reached = False'],
+                        ['self.idle = True', 'self.running_forw = False', 'self.torque_reached = False'],
                         ]
 
         self.timer_period = 0.5
