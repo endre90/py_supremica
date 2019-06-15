@@ -24,24 +24,16 @@ class tool_sp_emulator():
         
         self.idle = False
         self.running_forw = False
-        self.running_back = False
         self.torque_reached = False
-        self.untightened = False
         
         self.set_idle = False
         self.set_running_forw = False
-        self.set_running_back = False
 
-        self.predicates = ['self.idle and not self.running_forw and not self.running_back and self.set_idle and not self.set_running_forw and not self.set_running_back',
-                           'not self.set_idle and self.set_running_forw and not self.running_forw and not self.running_back and not self.set_running_back',
-                           'not self.set_idle and self.set_running_forw and self.running_forw and not self.running_back and not self.set_running_back',
-                           'not self.set_idle and self.set_running_forw and self.torque_reached and not self.running_back and not self.set_running_back',
-                           'self.set_idle and not self.set_running_forw and self.running_forw and not self.running_back and not self.set_running_back',
-                           'self.idle and not self.running_forw and not self.running_back and self.set_idle and not self.set_running_forw and not self.set_running_back',
-                           'not self.set_idle and not self.set_running_forw and not self.running_forw and not self.running_back and self.set_running_back',
-                           'not self.set_idle and not self.set_running_forw and not self.running_forw and self.running_back and self.set_running_back',
-                           'not self.set_idle and not self.set_running_forw and self.untightened and not self.running_forw and self.set_running_back',
-                           'self.set_idle and not self.set_running_back and self.running_back and not self.running_forw and not self.set_running_forw',
+        self.predicates = ['self.idle and not self.running_forw and self.set_idle and not self.set_running_forw',
+                           'not self.set_idle and self.set_running_forw and not self.running_forw',
+                           'not self.set_idle and self.set_running_forw and self.running_forw',
+                           'not self.set_idle and self.set_running_forw and self.torque_reached',
+                           'self.set_idle and not self.set_running_forw and self.running_forw',
                            ]
 
         self.actions = [['self.set_idle = False', 'self.set_running_forw = True'],
@@ -49,23 +41,13 @@ class tool_sp_emulator():
                         [],
                         ['self.set_idle = True', 'self.set_running_forw = False'],
                         [],
-                        ['self.set_idle = False', 'self.set_running_back = True'],
-                        [],
-                        [],
-                        ['self.set_idle = True', 'self.set_running_back = False'],
-                        [],
                         ]
         
-        self.effects = [['self.torque_reached = False', 'self.untightened = False'],
-                        ['self.idle = False', 'self.running_forw = True', 'self.torque_reached = False', 'self.untightened = False'],
-                        ['self.torque_reached = True', 'self.untightened = False'],
-                        ['self.torque_reached = False', 'self.untightened = False'],
-                        ['self.idle = True', 'self.running_forw = False', 'self.torque_reached = False', 'self.untightened = False'],
-                        ['self.torque_reached = False', 'self.untightened = False'],
-                        ['self.idle = False', 'self.running_back = True', 'self.torque_reached = False', 'self.untightened = False'],
-                        ['self.untightened = True', 'self.torque_reached = False'],
-                        ['self.torque_reached = False', 'self.untightened = False'],
-                        ['self.idle = True', 'self.running_back = False', 'self.torque_reached = False', 'self.untightened = False'],
+        self.effects = [[],
+                        ['self.idle = False', 'self.running_forw = True', 'self.torque_reached = False'],
+                        ['self.torque_reached = True'],
+                        [],
+                        ['self.idle = True', 'self.running_forw = False'],
                         ]
 
         self.timer_period = 0.5
@@ -89,26 +71,24 @@ class tool_sp_emulator():
         self.msg_emulator_to_interfacer.got_set_idle = self.set_idle
         self.set_running_forw = data.set_running_forw
         self.msg_emulator_to_interfacer.got_set_running_forw = self.set_running_forw
-        self.set_running_back = data.set_running_back
-        self.msg_emulator_to_interfacer.got_set_running_back = self.set_running_back
 
 
     def main_callback(self):
         #have to evaluate all predicates first and only then execute the effects
-        store_eval_index = []
+        store_eval_indexes = []
         for pred in self.predicates:
             if eval(pred):
-                store_eval_index.append(self.predicates.index(pred))
-        
-        for effect in self.effects[self.predicates.index(pred)]:
-            exec(effect)
+                store_eval_indexes.append(self.predicates.index(pred))
+
+        for store_eval_index in store_eval_indexes:
+            for effect in self.effects[store_eval_index]:
+                print(effect)
+                exec(effect)
         
         
         self.msg_emulator_to_interfacer.idle = self.idle
         self.msg_emulator_to_interfacer.running_forw = self.running_forw
-        self.msg_emulator_to_interfacer.running_back = self.running_back
         self.msg_emulator_to_interfacer.torque_reached = self.torque_reached
-        self.msg_emulator_to_interfacer.untightened = self.untightened
 
         self.tool_interfacer_pub.publish(self.msg_emulator_to_interfacer)
 

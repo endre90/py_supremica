@@ -42,11 +42,14 @@ def test_{{ resource_name }}_random(data):
     test_no_response = True
     counter = 0
     result = 0
+    last_seen_msg = 0
 
     tt = 20
 
     def state_callback(msg):
-        nonlocal test_started, test_succeeded, result, tt, test_no_response, cmd
+        nonlocal test_started, test_succeeded, result, tt, test_no_response, cmd, last_seen_msg
+
+        last_seen_msg = msg
 
         test_no_response = False
 
@@ -107,8 +110,6 @@ def test_{{ resource_name }}_random(data):
                 elif x.endswith(" = True"):
                     x = x[:-7]
 
-                print(x)
-
                 # great hacks
                 if x.startswith("self."):
                     x = x[5:]
@@ -159,6 +160,10 @@ def test_{{ resource_name }}_random(data):
 
     # if not started its just ok after the timeout
     if test_started:
+        if not test_succeeded:
+            print(result[2])
+            print(last_seen_msg)
+
         assert test_succeeded, "Node did not produce desired effect within time limit"
     else:
         assert not test_no_response, "No replies, is the driver node up?"

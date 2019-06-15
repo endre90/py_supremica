@@ -294,11 +294,11 @@ class ComponentGenerator():
         print(add_effects)
 
         for update in updates:
-            for add_effect in add_effects:
-                if add_effect[1] != updates.index(update):
-                    if add_effect[0] not in update[2]:
-                        if add_effect[1] not in update[2]:
-                            update[2].append(add_effect[0])
+            # for add_effect in add_effects:
+            #     if add_effect[1] != updates.index(update):
+            #         if add_effect[0] not in update[2]:
+            #             if add_effect[1] not in update[2]:
+            #                 update[2].append(add_effect[0])
 
 
             update[2] = ['self.{}'.format(effect) for effect in update[2]]
